@@ -11,6 +11,7 @@ func TestWriter_FiresCallbackEveryStep(t *testing.T) {
 	t.Parallel()
 
 	var calls []int64
+
 	w := New(10, func(total int64) { calls = append(calls, total) })
 
 	// Five writes of 4 bytes each -> totals 4,8,12,16,20.
@@ -36,6 +37,7 @@ func TestWriter_LargeWriteFiresOnce(t *testing.T) {
 	t.Parallel()
 
 	var calls int
+
 	w := New(10, func(int64) { calls++ })
 
 	// A single 100-byte write crosses the step boundary many times,
@@ -114,6 +116,7 @@ func TestWriter_EmptyWrite(t *testing.T) {
 	t.Parallel()
 
 	var calls int
+
 	w := New(10, func(int64) { calls++ })
 
 	if n, err := w.Write(nil); err != nil {
@@ -135,6 +138,7 @@ func TestWriter_ExactStep(t *testing.T) {
 	t.Parallel()
 
 	var calls []int64
+
 	w := New(10, func(total int64) { calls = append(calls, total) })
 
 	if n, err := w.Write(make([]byte, 10)); err != nil {
@@ -158,9 +162,11 @@ func TestWriter_ExactStep(t *testing.T) {
 	} else if n != 1 {
 		t.Errorf("Write returned %d, want 1", n)
 	}
+
 	if got, want := calls, []int64{10}; !slices.Equal(got, want) {
 		t.Errorf("calls = %v, want %v", got, want)
 	}
+
 	if total := w.Total(); total != 11 {
 		t.Errorf("Total() = %d, want 11", total)
 	}
@@ -170,6 +176,7 @@ func TestWriter_StepOne(t *testing.T) {
 	t.Parallel()
 
 	var calls []int64
+
 	w := New(1, func(total int64) {
 		calls = append(calls, total)
 	})
@@ -193,6 +200,7 @@ func TestWriter_MultipleLargeWrites(t *testing.T) {
 	t.Parallel()
 
 	var calls int
+
 	w := New(10, func(int64) { calls++ })
 
 	// Two large writes, each crossing the step multiple times
@@ -212,9 +220,11 @@ func TestWriter_MultipleLargeWrites(t *testing.T) {
 	} else if n != 100 {
 		t.Errorf("Write returned %d, want 100", n)
 	}
+
 	if calls != 2 {
 		t.Errorf("callback called %d times after second write, want 2", calls)
 	}
+
 	if total := w.Total(); total != 200 {
 		t.Errorf("Total() = %d, want 200", total)
 	}
@@ -224,6 +234,7 @@ func TestWriter_ModuloBehaviour(t *testing.T) {
 	t.Parallel()
 
 	var calls []int64
+
 	w := New(10, func(total int64) {
 		calls = append(calls, total)
 	})
@@ -267,6 +278,7 @@ func TestWriter_ComposesWithIoCopy(t *testing.T) {
 	dst := &bytes.Buffer{}
 
 	var totals []int64
+
 	progress := New(256, func(total int64) { totals = append(totals, total) })
 
 	// Use a buffer of 256 bytes so each Write is exactly the step size.
