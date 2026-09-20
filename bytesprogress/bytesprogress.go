@@ -34,8 +34,8 @@ type Callback func(total int64)
 //   - Writer is **not** safe for concurrent use by multiple goroutines.
 //     Wrap it with sync.Mutex if you need concurrent writes.
 type Writer struct {
-	step     int64    // byte interval between callbacks
 	callback Callback // called when pending >= step
+	step     int64    // byte interval between callbacks
 
 	total   int64 // total bytes written so far
 	pending int64 // bytes written since last callback
